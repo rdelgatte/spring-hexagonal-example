@@ -1,10 +1,7 @@
 package com.rdelgatte.hexagonal.api;
 
 import static io.vavr.API.List;
-import static io.vavr.API.None;
-import static io.vavr.API.Option;
 
-import com.rdelgatte.hexagonal.domain.Cart;
 import com.rdelgatte.hexagonal.domain.Customer;
 import com.rdelgatte.hexagonal.domain.Product;
 import com.rdelgatte.hexagonal.spi.CustomerRepository;
@@ -46,18 +43,14 @@ public class CustomerServiceImpl implements CustomerService {
     Product product = productRepository.findProductByCode(productCode)
         .getOrElseThrow(() -> new IllegalArgumentException("The product does not exist"));
 
-    Customer customerToUpdate = customer.withCart(Option(customer.getCart()
-            .map(cart -> cart.withProducts(cart.getProducts().append(product)))
-            .getOrElse(new Cart().withProducts(List(product)))
-        )
-    );
+    Customer customerToUpdate = customer.withProducts(customer.getProducts().append(product));
     return customerRepository.save(customerToUpdate);
   }
 
   @Override
   public Customer emptyCart(String login) {
     Customer customerToUpdate = customerRepository.findByLogin(login)
-        .map(customer -> customer.withCart(None()))
+        .map(customer -> customer.withProducts(List()))
         .getOrElseThrow(() -> new IllegalArgumentException("The customer does not exist"));
     return customerRepository.save(customerToUpdate);
   }

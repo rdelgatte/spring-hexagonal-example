@@ -1,0 +1,10 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:11.2-alpine
+    environment:
+      - POSTGRES_PASSWORD=hexagonal
+      - POSTGRES_USER=hexagonal
+      - POSTGRES_DB=hexagonal-db
+    ports:
+      - 5432:5432

@@ -56,7 +56,7 @@ Here we will define the interactions over the domain so it implements these *por
 
 To do so, there are multiple sub-modules under infrastructure.
 
-## API (Application Provider Interfaces)
+### API (Application Provider Interfaces)
 
 It describes all the ports for everything that needs **to query the domain**. 
 
@@ -64,44 +64,9 @@ These interfaces are implemented by the domain.
 
 #### Rest client
 
-This module aims to expose some *rest* entry points to interact with products and customerss.
- 
-- Module: `rest-client`
-- Parent module: `infrastructure`
-- Dependencies: `spring-boot`
+This module aims to expose some *rest* entry points to interact with products and customers.
 
-In `ApplicationConfiguration`, we can find the definition of both `ProductService` and `CustomerService` adapters from the domain where we can decide which repository we should use (in memory | mysql).
-
-In the following example (default), we define the **persistence mode** for each service we want to use:
-- `ProductService` will use `MysqlProductRepository` (meaning products will be persisted in a mysql DB)
-- `CustomerService` will use `InMemoryCustomerRepository` (meaning customers will be persisted in memory)
-
-```
-  private MysqlProductRepositoryImpl mysqlProductRepository;
-
-  private InMemoryCustomerRepository inMemoryCustomerRepository() {
-    return new InMemoryCustomerRepository();
-  }
-
-  @Bean
-  public ProductService productService() {
-    return new ProductServiceImpl(mysqlProductRepository);
-  }
-
-  @Bean
-  public CustomerService customersService() {
-    return new CustomerServiceImpl(inMemoryCustomerRepository());
-  }
-```
-
-Note: to use outside package beans like for mysql persistence beans, we need to explicit the package to configuration as below:
-```
-@ComponentScan(basePackages = {
-    "com.rdelgatte.hexagonal.persistence.mysql",
-})
-``` 
-
-## SPI
+### SPI
 
 It gathers all the ports required by the domain **to retrieve information or get some services from third parties**. 
 
@@ -140,10 +105,72 @@ public class InMemoryProductRepository implements ProductRepository {
 }
 ```
 
-#### Mysql persistence
+#### Postgres persistence
 
-Using spring data and mysql connector, this Spring boot project define the persistence of domain data by implementing the same SPI ports as before.
- 
-  
- 
-  
+For Postgres database, add the following environment variables:
+
+```
+PG_PORT=5432
+PG_DB_NAME=hexagonal-db
+PG_USER_NAME=hexagonal
+PG_PASSWORD=hexagonal
+PG_HOST=localhost
+```
+
+## Application (module `application`)
+
+This module contains the application which will instantiate any of the previously highlighted modules so it runs a stand-alone application with a specific configuration.
+
+In `ApplicationConfiguration`, we can find the definition of both `ProductService` and `CustomerService` adapters from the domain where we can decide which repository we should use (in memory | mysql).
+
+In the following example (default), we define the **persistence mode** for each service we want to use:
+- `ProductService` will use `InMemoryProductRepository` (meaning products will be persisted in memory)
+- `CustomerService` will use `InMemoryCustomerRepository` (meaning customers will be persisted in memory)
+
+```
+  private static final InMemoryProductRepository inMemoryProductRepository = new InMemoryProductRepository();
+
+  private InMemoryCustomerRepository getCustomerRepository() {
+    return new InMemoryCustomerRepository();
+  }
+
+  @Bean
+  CustomerService customerService() {
+    return new CustomerServiceImpl(getCustomerRepository(), inMemoryProductRepository);
+  }
+
+  @Bean
+  ProductService productService() {
+    return new ProductServiceImpl(inMemoryProductRepository);
+  }
+```
+
+If we want to use mysql-persistence for products, we need to change configuration to:
+```
+  PostgresProductRepository postgresProductRepository(
+      PostgresSpringDataProductRepository postgresSpringDataProductRepository) {
+    return new PostgresProductRepository(postgresSpringDataProductRepository);
+  }
+
+  private InMemoryCustomerRepository getCustomerRepository() {
+    return new InMemoryCustomerRepository();
+  }
+
+  @Bean
+  CustomerService customerService(PostgresSpringDataProductRepository postgresSpringDataProductRepository) {
+    return new CustomerServiceImpl(getCustomerRepository(),
+        postgresProductRepository(postgresSpringDataProductRepository));
+  }
+
+  @Bean
+  ProductService productService(PostgresSpringDataProductRepository postgresSpringDataProductRepository) {
+    return new ProductServiceImpl(postgresProductRepository(postgresSpringDataProductRepository));
+  }
+```
+
+Note: if we want to use outside package beans, we need to explicit the package to configuration as below:
+```
+@ComponentScan(basePackages = {
+    "com.rdelgatte.hexagonal.persistence.mysql",
+})
+``` 

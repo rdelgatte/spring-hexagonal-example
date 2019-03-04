@@ -20,6 +20,7 @@ repositories {
 dependencies {
     implementation project(':domain')
     implementation project(':infrastructure:memory-persistence')
+    implementation project(':infrastructure:postgres-persistence')
     implementation project(':infrastructure:rest-client')
 
     implementation "org.springframework.boot:spring-boot-starter-web:$springBootVersion"

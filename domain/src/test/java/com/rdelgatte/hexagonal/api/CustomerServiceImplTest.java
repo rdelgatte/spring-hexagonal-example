@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
-import com.rdelgatte.hexagonal.domain.Cart;
 import com.rdelgatte.hexagonal.domain.Customer;
 import com.rdelgatte.hexagonal.domain.Product;
 import com.rdelgatte.hexagonal.spi.CustomerRepository;
@@ -41,7 +40,7 @@ class CustomerServiceImplTest {
       ANY_OTHER_LABEL, 5.0);
   private static final UUID ANY_CUSTOMER_ID = randomUUID();
   private static final String ANY_LOGIN = "ANY_LOGIN";
-  private static final Customer ANY_CUSTOMER = new Customer(ANY_CUSTOMER_ID, ANY_LOGIN, None());
+  private static final Customer ANY_CUSTOMER = new Customer(ANY_CUSTOMER_ID, ANY_LOGIN, List());
 
   private CustomerServiceImpl cut;
   @Mock
@@ -90,7 +89,7 @@ class CustomerServiceImplTest {
 
     verify(customerRepositoryMock).save(customerCaptor.capture());
     assertThat(customerCaptor.getValue().getLogin()).isEqualTo(ANY_LOGIN);
-    assertThat(customerCaptor.getValue().getCart()).isEqualTo(None());
+    assertThat(customerCaptor.getValue().getProducts()).isEqualTo(List());
     assertThat(customer.getLogin()).isEqualTo(ANY_LOGIN);
     verifyZeroInteractions(productRepositoryMock);
   }
@@ -124,7 +123,7 @@ class CustomerServiceImplTest {
 
   @Test
   void existingProductAndCustomer_addProductToCart_returnsUpdatedCustomer() {
-    Customer expected = ANY_CUSTOMER.withCart(Option(new Cart().withProducts(List(ANY_PRODUCT))));
+    Customer expected = ANY_CUSTOMER.withProducts(List(ANY_PRODUCT));
     when(customerRepositoryMock.findByLogin(ANY_LOGIN)).thenReturn(Option(ANY_CUSTOMER));
     when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(Option(ANY_PRODUCT));
     when(customerRepositoryMock.save(any())).thenReturn(expected);
@@ -132,16 +131,14 @@ class CustomerServiceImplTest {
     Customer customer = cut.addProductToCart(ANY_LOGIN, ANY_PRODUCT_CODE);
     verify(customerRepositoryMock).save(customerCaptor.capture());
     Customer savedCustomer = customerCaptor.getValue();
-    assertTrue(savedCustomer.getCart().isDefined());
-    assertThat(savedCustomer.getCart().get().getProducts()).containsExactly(ANY_PRODUCT);
-    assertThat(customer.getCart().get().getProducts()).containsExactly(ANY_PRODUCT);
+    assertThat(savedCustomer.getProducts()).containsExactly(ANY_PRODUCT);
+    assertThat(customer.getProducts()).containsExactly(ANY_PRODUCT);
   }
 
   @Test
   void existingProductAndCustomerWithCart_addProductToCart_returnsUpdatedCustomer() {
-    Customer existing = ANY_CUSTOMER.withCart(Option(new Cart().withProducts(List(ANY_PRODUCT))));
-    Customer expected = existing
-        .withCart(Option(existing.getCart().get().withProducts(List(ANY_PRODUCT, ANY_OTHER_PRODUCT))));
+    Customer existing = ANY_CUSTOMER.withProducts(List(ANY_PRODUCT));
+    Customer expected = existing.withProducts(List(ANY_PRODUCT, ANY_OTHER_PRODUCT));
     when(customerRepositoryMock.findByLogin(ANY_LOGIN)).thenReturn(Option(existing));
     when(productRepositoryMock.findProductByCode(ANY_OTHER_PRODUCT_CODE)).thenReturn(Option(ANY_OTHER_PRODUCT));
     when(customerRepositoryMock.save(any())).thenReturn(expected);
@@ -149,9 +146,8 @@ class CustomerServiceImplTest {
     Customer customer = cut.addProductToCart(ANY_LOGIN, ANY_OTHER_PRODUCT_CODE);
     verify(customerRepositoryMock).save(customerCaptor.capture());
     Customer savedCustomer = customerCaptor.getValue();
-    assertTrue(savedCustomer.getCart().isDefined());
-    assertThat(savedCustomer.getCart().get().getProducts()).containsExactly(ANY_PRODUCT, ANY_OTHER_PRODUCT);
-    assertThat(customer.getCart().get().getProducts()).containsExactly(ANY_PRODUCT, ANY_OTHER_PRODUCT);
+    assertThat(savedCustomer.getProducts()).containsExactly(ANY_PRODUCT, ANY_OTHER_PRODUCT);
+    assertThat(customer.getProducts()).containsExactly(ANY_PRODUCT, ANY_OTHER_PRODUCT);
   }
 
   /**
@@ -170,7 +166,7 @@ class CustomerServiceImplTest {
 
   @Test
   void existingCustomer_emptyCart_returnsCustomerWithEmptiedCart() {
-    Customer expected = ANY_CUSTOMER.withCart(None());
+    Customer expected = ANY_CUSTOMER.withProducts(List());
     when(customerRepositoryMock.findByLogin(ANY_LOGIN)).thenReturn(Option(ANY_CUSTOMER));
     when(customerRepositoryMock.save(any())).thenReturn(expected);
 
