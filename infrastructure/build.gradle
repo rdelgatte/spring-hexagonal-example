@@ -1,0 +1,28 @@
+subprojects {
+    group 'com.rdelgatte.hexagonal.infrastructure'
+
+    dependencies {
+        implementation project(':domain')
+    }
+
+    apply plugin: 'info.solidsoft.pitest'
+
+    /**
+     * Pitest configuration for mutation testing:
+     * - Using last version of Pitest (for jdk11 support)
+     * - Using plugin for junit5 support
+     * - Export to XML (for Sonar) + HTML
+     * - Overriding reports each run
+     */
+    pitest {
+        pitestVersion = '1.4.3'
+        testPlugin = 'junit5'
+        outputFormats = ['XML', 'HTML']
+        timestampedReports = false
+        threads = 4
+    }
+}
+
+// danube-infrastructure is just a parent level with no standalone value
+install.enabled = false
+publish.enabled = false

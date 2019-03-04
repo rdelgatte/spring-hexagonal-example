@@ -1,0 +1,18 @@
+apply plugin: 'info.solidsoft.pitest'
+
+/**
+ * Pitest configuration for mutation testing:
+ * - Using last version of Pitest (for jdk11 support)
+ * - Using plugin for junit5 support
+ * - Export to XML (for Sonar) + HTML
+ * - Overriding reports each run
+ * - Target only services classes as domain and SPI are dumb POJOs
+ */
+pitest {
+    pitestVersion = '1.4.3'
+    testPlugin = 'junit5'
+    outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+    threads = 4
+    targetClasses = ['com.decathlon.offer.danube.api.*']
+}
