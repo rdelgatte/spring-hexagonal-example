@@ -6,7 +6,6 @@ import static io.vavr.API.Option;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.rdelgatte.hexagonal.domain.Cart;
 import com.rdelgatte.hexagonal.domain.Customer;
 import com.rdelgatte.hexagonal.domain.Product;
 import java.util.UUID;
@@ -17,10 +16,10 @@ class InMemoryCustomerRepositoryTest {
 
   private static final UUID ANY_CUSTOMER_ID = randomUUID();
   private static final String ANY_LOGIN = "ANY_LOGIN";
-  private static final Customer ANY_CUSTOMER = new Customer(ANY_CUSTOMER_ID, ANY_LOGIN, None());
+  private static final Customer ANY_CUSTOMER = new Customer(ANY_CUSTOMER_ID, ANY_LOGIN, List());
   private static final UUID ANY_OTHER_CUSTOMER_ID = randomUUID();
   private static final String ANY_OTHER_LOGIN = "ANY_OTHER_LOGIN";
-  private static final Customer ANY_OTHER_CUSTOMER = new Customer(ANY_OTHER_CUSTOMER_ID, ANY_OTHER_LOGIN, None());
+  private static final Customer ANY_OTHER_CUSTOMER = new Customer(ANY_OTHER_CUSTOMER_ID, ANY_OTHER_LOGIN, List());
   private static final UUID ANY_PRODUCT_ID = randomUUID();
   private static final String ANY_PRODUCT_CODE = "ANY_PRODUCT_CODE";
   private static final String ANY_LABEL = "ANY_LABEL";
@@ -44,7 +43,7 @@ class InMemoryCustomerRepositoryTest {
   @Test
   void existingCustomer_save_updateCustomerToRepository() {
     cut = new InMemoryCustomerRepository().withCustomers(List(ANY_CUSTOMER));
-    Customer updatedCustomer = ANY_CUSTOMER.withCart(Option(new Cart().withProducts(List(ANY_PRODUCT))));
+    Customer updatedCustomer = ANY_CUSTOMER.withProducts(List(ANY_PRODUCT));
     assertThat(cut.save(updatedCustomer)).isEqualTo(updatedCustomer);
     assertThat(cut.getCustomers()).isEqualTo(List(updatedCustomer));
   }
