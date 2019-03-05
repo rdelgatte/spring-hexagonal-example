@@ -15,3 +15,6 @@ gradle-app.setting
 
 # Intellij files
 .idea
+
+build
+out

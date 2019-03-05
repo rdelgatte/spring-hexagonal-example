@@ -6,7 +6,6 @@ import static io.vavr.control.Option.ofOptional;
 import com.rdelgatte.hexagonal.domain.Customer;
 import com.rdelgatte.hexagonal.infrastructure.postgres.dao.PostgresCustomer;
 import com.rdelgatte.hexagonal.spi.CustomerRepository;
-import com.rdelgatte.hexagonal.spi.ProductRepository;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import java.util.UUID;
@@ -14,7 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 /**
- * Implements the SPI {@link ProductRepository} as Postgres provider.
+ * Implements the SPI {@link CustomerRepository} as Postgres provider.
  */
 @Repository
 @AllArgsConstructor

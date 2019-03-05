@@ -5,4 +5,5 @@ include 'infrastructure:rest-client'
 include 'infrastructure:memory-persistence'
 include 'infrastructure:postgres-persistence'
 include 'application'
+include 'console-application'
 
