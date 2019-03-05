@@ -9,15 +9,12 @@ buildscript {
         pitestPluginVersion = '1.3.0'
     }
     repositories {
-        maven {
-            url 'http://nexus.osiris.withoxylane.com/content/groups/ManagedRepositories'
-        }
+        mavenCentral()
     }
     dependencies {
         classpath("info.solidsoft.gradle.pitest:gradle-pitest-plugin:$pitestPluginVersion")
     }
 }
-
 
 allprojects {
     group 'com.rdelgatte.hexagonal'
