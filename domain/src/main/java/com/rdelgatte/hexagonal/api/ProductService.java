@@ -13,6 +13,4 @@ public interface ProductService {
   List<Product> getAllProducts();
 
   Option<Product> findProductByCode(String code);
-
-
 }

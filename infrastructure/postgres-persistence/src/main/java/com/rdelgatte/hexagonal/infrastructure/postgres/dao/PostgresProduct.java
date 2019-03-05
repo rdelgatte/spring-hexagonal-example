@@ -1,8 +1,10 @@
 package com.rdelgatte.hexagonal.infrastructure.postgres.dao;
 
+import static java.math.BigDecimal.ZERO;
 import static java.util.UUID.randomUUID;
 
 import com.rdelgatte.hexagonal.domain.Product;
+import java.math.BigDecimal;
 import java.util.UUID;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -22,7 +24,7 @@ public class PostgresProduct {
   private UUID id = randomUUID();
   private String code = "";
   private String label = "";
-  private double price = 0.0;
+  private BigDecimal price = ZERO;
 
   public static PostgresProduct fromProduct(Product product) {
     return new PostgresProduct()

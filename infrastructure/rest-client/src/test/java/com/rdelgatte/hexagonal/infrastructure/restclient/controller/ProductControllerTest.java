@@ -3,13 +3,14 @@ package com.rdelgatte.hexagonal.infrastructure.restclient.controller;
 import static io.vavr.API.List;
 import static io.vavr.API.None;
 import static io.vavr.API.Option;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.rdelgatte.hexagonal.api.ProductService;
 import com.rdelgatte.hexagonal.domain.Product;
-import java.util.UUID;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +28,7 @@ class ProductControllerTest {
   @BeforeEach
   void setUp() {
     cut = new ProductController(productServiceMock);
-    product = new Product(UUID.randomUUID(), "1616", "Easybreath", 29.95);
+    product = new Product(randomUUID(), "1616", "Easybreath", BigDecimal.valueOf(29.95));
   }
 
   /**

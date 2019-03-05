@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.RestController;
 class CustomerController {
 
   static final String BASE_PATH = "customers";
-  private static final String RESOURCE_PATH = "{login}";
+  private static final String RESOURCE_PATH = "{name}";
   private final CustomerService customerService;
 
   @PostMapping
-  void signIn(@RequestBody String login) {
-    customerService.signIn(login);
+  void signUp(@RequestBody String name) {
+    customerService.signUp(name);
   }
 
   @GetMapping(RESOURCE_PATH)
-  Option<Customer> find(@PathVariable String login) {
-    return customerService.findCustomer(login);
+  Option<Customer> find(@PathVariable String name) {
+    return customerService.findCustomer(name);
   }
 
   @PatchMapping(RESOURCE_PATH)
-  void addProductToCart(@PathVariable String login, @RequestBody String productCode) {
-    customerService.addProductToCart(login, productCode);
+  void addProductToCart(@PathVariable String name, @RequestBody String productCode) {
+    customerService.addProductToCart(name, productCode);
   }
 }
