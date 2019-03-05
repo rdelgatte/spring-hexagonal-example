@@ -33,7 +33,7 @@ public class PostgresCustomerRepository implements CustomerRepository {
 
   @Override
   public Option<Customer> findByLogin(String login) {
-    return ofOptional(postgresSpringDataCustomerRepository.findByLogin(login).map(PostgresCustomer::toCustomer));
+    return ofOptional(postgresSpringDataCustomerRepository.findByName(login).map(PostgresCustomer::toCustomer));
   }
 
   @Override

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostgresSpringDataCustomerRepository extends JpaRepository<PostgresCustomer, UUID> {
 
-  Optional<PostgresCustomer> findByLogin(String login);
+  Optional<PostgresCustomer> findByName(String name);
 }
