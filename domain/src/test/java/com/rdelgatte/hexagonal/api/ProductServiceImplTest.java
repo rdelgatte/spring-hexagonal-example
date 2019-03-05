@@ -7,10 +7,13 @@ import static io.vavr.API.Option;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import com.rdelgatte.hexagonal.domain.Product;
 import com.rdelgatte.hexagonal.spi.ProductRepository;
+import java.math.BigDecimal;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,18 +24,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceImplTest {
 
+  private static final String ANY_PRODUCT_CODE = "ANY_PRODUCT_CODE";
+  private static final String ANY_PRODUCT_LABEL = "ANY_PRODUCT_LABEL";
+  private static final Product ANY_PRODUCT = new Product()
+      .withCode(ANY_PRODUCT_CODE)
+      .withLabel(ANY_PRODUCT_LABEL)
+      .withPrice(BigDecimal.TEN);
   private ProductServiceImpl cut;
   @Mock
   private ProductRepository productRepositoryMock;
-  private Product product;
-  private String productCode = "123";
 
   @BeforeEach
   void setUp() {
     cut = new ProductServiceImpl(productRepositoryMock);
-    product = new Product()
-        .withCode(productCode)
-        .withLabel("My awesome product");
   }
 
   /**
@@ -40,12 +44,13 @@ class ProductServiceImplTest {
    */
   @Test
   void productAlreadyExists_throwsException() {
-    when(productRepositoryMock.findProductByCode(productCode)).thenReturn(Option(product));
+    when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(Option(ANY_PRODUCT));
 
     IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-        () -> cut.createProduct(product));
+        () -> cut.createProduct(ANY_PRODUCT));
     assertThat(illegalArgumentException.getMessage())
-        .isEqualTo("Product " + product.getCode() + " already exists so you can't create it");
+        .isEqualTo("Product " + ANY_PRODUCT.getCode() + " already exists so you can't create it");
+    verifyNoMoreInteractions(productRepositoryMock);
   }
 
   @Test
@@ -54,14 +59,25 @@ class ProductServiceImplTest {
         () -> cut.createProduct(new Product()));
 
     assertThat(illegalArgumentException.getMessage()).isEqualTo("There is no code for the product");
+    verifyZeroInteractions(productRepositoryMock);
+  }
+
+  @Test
+  void zeroPricedProduct_createProduct_throwsException() {
+    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+        () -> cut.createProduct(ANY_PRODUCT.withPrice(BigDecimal.ZERO)));
+
+    assertThat(illegalArgumentException.getMessage()).isEqualTo("Product should be priced");
+    verifyZeroInteractions(productRepositoryMock);
   }
 
   @Test
   void unknownValidProduct_createProduct() {
-    when(productRepositoryMock.findProductByCode(productCode)).thenReturn(None());
-    when(productRepositoryMock.addProduct(product)).thenReturn(product);
+    when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(None());
+    when(productRepositoryMock.addProduct(ANY_PRODUCT)).thenReturn(ANY_PRODUCT);
 
-    Assertions.assertThat(cut.createProduct(product)).isEqualTo(product);
+    Assertions.assertThat(cut.createProduct(ANY_PRODUCT)).isEqualTo(ANY_PRODUCT);
+    verify(productRepositoryMock).addProduct(ANY_PRODUCT);
   }
 
   /**
@@ -69,16 +85,17 @@ class ProductServiceImplTest {
    */
   @Test
   void unknownProduct_returnsNone() {
-    when(productRepositoryMock.findProductByCode(productCode)).thenReturn(None());
+    when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(None());
 
-    Assertions.assertThat(cut.findProductByCode(productCode)).isEqualTo(None());
+    Assertions.assertThat(cut.findProductByCode(ANY_PRODUCT_CODE)).isEqualTo(None());
+    verifyNoMoreInteractions(productRepositoryMock);
   }
 
   @Test
   void existingProduct_returnsProduct() {
-    when(productRepositoryMock.findProductByCode(productCode)).thenReturn(Option(product));
+    when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(Option(ANY_PRODUCT));
 
-    Assertions.assertThat(cut.findProductByCode(productCode)).isEqualTo(Option(product));
+    Assertions.assertThat(cut.findProductByCode(ANY_PRODUCT_CODE)).isEqualTo(Option(ANY_PRODUCT));
   }
 
   /**
@@ -86,25 +103,27 @@ class ProductServiceImplTest {
    */
   @Test
   void deleteUnknownProduct_throwsException() {
-    when(productRepositoryMock.findProductByCode(productCode)).thenReturn(None());
+    when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(None());
 
     IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
-        () -> cut.deleteProduct(productCode));
-    assertThat(illegalArgumentException.getMessage()).isEqualTo("Product 123 does not exist");
+        () -> cut.deleteProduct(ANY_PRODUCT_CODE));
+    assertThat(illegalArgumentException.getMessage()).isEqualTo("Product " + ANY_PRODUCT_CODE + " does not exist");
+    verifyNoMoreInteractions(productRepositoryMock);
   }
 
   @Test
   void deleteNoCode_throwsException() {
     assertThrows(NullPointerException.class, () -> cut.deleteProduct(null));
+    verifyZeroInteractions(productRepositoryMock);
   }
 
   @Test
   void deleteExistingProduct_deleteProduct() {
-    when(productRepositoryMock.findProductByCode(productCode)).thenReturn(Option(product));
+    when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(Option(ANY_PRODUCT));
 
-    cut.deleteProduct(productCode);
+    cut.deleteProduct(ANY_PRODUCT_CODE);
 
-    verify(productRepositoryMock).deleteProduct(product.getId());
+    verify(productRepositoryMock).deleteProduct(ANY_PRODUCT.getId());
   }
 
   /**
@@ -112,8 +131,8 @@ class ProductServiceImplTest {
    */
   @Test
   void getAllProducts_returnProducts() {
-    when(productRepositoryMock.findAllProducts()).thenReturn(List(product));
+    when(productRepositoryMock.findAllProducts()).thenReturn(List(ANY_PRODUCT));
 
-    Assertions.assertThat(cut.getAllProducts()).containsExactly(product);
+    Assertions.assertThat(cut.getAllProducts()).containsExactly(ANY_PRODUCT);
   }
 }

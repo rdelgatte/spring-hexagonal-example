@@ -5,11 +5,11 @@ import io.vavr.control.Option;
 
 public interface CustomerService {
 
-  Option<Customer> findCustomer(String login);
+  Customer signUp(String name);
 
-  Customer signIn(String login);
+  Option<Customer> findCustomer(String name);
 
-  Customer addProductToCart(String login, String productCode);
+  Customer addProductToCart(String name, String productCode);
 
-  Customer emptyCart(String login);
+  Customer emptyCart(String name);
 }

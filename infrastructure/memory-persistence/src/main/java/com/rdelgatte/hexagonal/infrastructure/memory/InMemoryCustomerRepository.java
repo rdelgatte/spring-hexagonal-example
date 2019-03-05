@@ -21,7 +21,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
   private List<Customer> customers = List();
 
   public Customer save(Customer customer) {
-    Option<Customer> maybeCustomer = findByLogin(customer.getLogin());
+    Option<Customer> maybeCustomer = findByLogin(customer.getName());
     if (maybeCustomer.isEmpty()) {
       this.customers = getCustomers().append(customer);
     } else {
@@ -35,7 +35,7 @@ public class InMemoryCustomerRepository implements CustomerRepository {
   }
 
   public Option<Customer> findByLogin(String login) {
-    return getCustomers().find(customer -> login.equals(customer.getLogin()));
+    return getCustomers().find(customer -> login.equals(customer.getName()));
   }
 
   public List<Customer> findAll() {

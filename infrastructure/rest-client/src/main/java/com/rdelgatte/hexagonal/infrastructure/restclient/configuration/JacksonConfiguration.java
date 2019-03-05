@@ -26,7 +26,6 @@ public class JacksonConfiguration {
     return new VavrModule();
   }
 
-
   @Bean
   public Module javaTime() {
     return new JavaTimeModule();

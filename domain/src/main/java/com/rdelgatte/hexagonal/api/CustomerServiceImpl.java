@@ -7,17 +7,13 @@ import com.rdelgatte.hexagonal.domain.Product;
 import com.rdelgatte.hexagonal.spi.CustomerRepository;
 import com.rdelgatte.hexagonal.spi.ProductRepository;
 import io.vavr.control.Option;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
   private final CustomerRepository customerRepository;
   private final ProductRepository productRepository;
-
-  public CustomerServiceImpl(CustomerRepository customerRepository,
-      ProductRepository productRepository) {
-    this.customerRepository = customerRepository;
-    this.productRepository = productRepository;
-  }
 
   @Override
   public Option<Customer> findCustomer(String login) {
@@ -25,14 +21,14 @@ public class CustomerServiceImpl implements CustomerService {
   }
 
   @Override
-  public Customer signIn(String login) {
+  public Customer signUp(String login) {
     if (login.isBlank()) {
-      throw new IllegalArgumentException("Customer login should not be blank");
+      throw new IllegalArgumentException("Customer name should not be blank");
     }
     if (customerRepository.findByLogin(login).isDefined()) {
       throw new IllegalArgumentException("Customer already exists so you can't sign in");
     }
-    return customerRepository.save(new Customer().withLogin(login));
+    return customerRepository.save(new Customer().withName(login));
   }
 
   @Override
@@ -43,14 +39,14 @@ public class CustomerServiceImpl implements CustomerService {
     Product product = productRepository.findProductByCode(productCode)
         .getOrElseThrow(() -> new IllegalArgumentException("The product does not exist"));
 
-    Customer customerToUpdate = customer.withProducts(customer.getProducts().append(product));
+    Customer customerToUpdate = customer.withCart(customer.getCart().append(product));
     return customerRepository.save(customerToUpdate);
   }
 
   @Override
   public Customer emptyCart(String login) {
     Customer customerToUpdate = customerRepository.findByLogin(login)
-        .map(customer -> customer.withProducts(List()))
+        .map(customer -> customer.withCart(List()))
         .getOrElseThrow(() -> new IllegalArgumentException("The customer does not exist"));
     return customerRepository.save(customerToUpdate);
   }

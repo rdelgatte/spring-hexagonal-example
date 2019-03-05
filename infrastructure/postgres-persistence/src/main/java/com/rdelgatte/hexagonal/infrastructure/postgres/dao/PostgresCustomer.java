@@ -23,15 +23,15 @@ public class PostgresCustomer {
 
   @Id
   private UUID id = randomUUID();
-  private String login = "";
+  private String name = "";
   @ManyToMany
-  private List<PostgresProduct> products = List.of();
+  private List<PostgresProduct> cart = List.of();
 
   public static PostgresCustomer fromCustomer(Customer customer) {
     return new PostgresCustomer()
         .withId(customer.getId())
-        .withLogin(customer.getLogin())
-        .withProducts(customer.getProducts()
+        .withName(customer.getName())
+        .withCart(customer.getCart()
             .map(PostgresProduct::fromProduct)
             .toJavaList()
         );
@@ -40,7 +40,7 @@ public class PostgresCustomer {
   public Customer toCustomer() {
     return new Customer()
         .withId(id)
-        .withLogin(login)
-        .withProducts(ofAll(products).map(PostgresProduct::toProduct));
+        .withName(name)
+        .withCart(ofAll(cart).map(PostgresProduct::toProduct));
   }
 }
