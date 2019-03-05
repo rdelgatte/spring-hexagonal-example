@@ -1,8 +1,8 @@
 # Example of `hexagonal-architecture` implementation
 
-Some references about hexagonal architecture / DDD (Domain Driven Design):
+Some references about hexagonal architecture:
 - https://www.youtube.com/watch?v=th4AgBcrEHA (introduction by Alistair Cockburn)
-- https://www.youtube.com/watch?v=Hi5aDfRe-aE (préz devoxx)
+- https://www.youtube.com/watch?v=Hi5aDfRe-aE
 - https://en.wikipedia.org/wiki/Domain-driven_design
 - https://blog.xebia.fr/2016/03/16/perennisez-votre-metier-avec-larchitecture-hexagonale/
 - https://blog.octo.com/architecture-hexagonale-trois-principes-et-un-exemple-dimplementation/
@@ -10,14 +10,46 @@ Some references about hexagonal architecture / DDD (Domain Driven Design):
 This example application has been built with:
 - JDK11
 - Gradle 5.*
-- Spring boot 
+- Spring Boot 2
 
 ## Context
 
 The application is a basic example which aims to handle customers and products so we can: 
 - create products
-- create users 
-- add products to users' cart
+- create customers 
+- add products to customers' cart
+
+Here is an UML class diagram of our model:
+![UML](doc/uml.png)
+
+The domain also exposes some interfaces to interact with customers and products:
+
+- `CustomerService.java`
+```
+public interface CustomerService {
+
+  Customer signUp(String name);
+
+  Option<Customer> findCustomer(String name);
+
+  Customer addProductToCart(String name, String productCode);
+
+  Customer emptyCart(String name);
+}
+```
+- `ProductService.java`
+```
+public interface ProductService {
+
+  Product createProduct(Product product);
+
+  void deleteProduct(String code);
+  
+  List<Product> getAllProducts();
+
+  Option<Product> findProductByCode(String code);
+}
+```
 
 ## Start-up
 
@@ -121,7 +153,7 @@ PG_HOST=localhost
 
 This module contains the application which will instantiate any of the previously highlighted modules so it runs a stand-alone application with a specific configuration.
 
-In `ApplicationConfiguration`, we can find the definition of both `ProductService` and `CustomerService` adapters from the domain where we can decide which repository we should use (in memory | mysql).
+In `ApplicationConfiguration`, we can find the definition of both `ProductService` and `CustomerService` adapters from the domain where we can decide which repository we should use (in memory | postgres).
 
 In the following example (default), we define the **persistence mode** for each service we want to use:
 - `ProductService` will use `InMemoryProductRepository` (meaning products will be persisted in memory)
@@ -145,7 +177,7 @@ In the following example (default), we define the **persistence mode** for each 
   }
 ```
 
-If we want to use mysql-persistence for products, we need to change configuration to:
+If we want to use postgres-persistence for products, we need to change configuration to:
 ```
   PostgresProductRepository postgresProductRepository(
       PostgresSpringDataProductRepository postgresSpringDataProductRepository) {
@@ -171,6 +203,10 @@ If we want to use mysql-persistence for products, we need to change configuratio
 Note: if we want to use outside package beans, we need to explicit the package to configuration as below:
 ```
 @ComponentScan(basePackages = {
-    "com.rdelgatte.hexagonal.persistence.mysql",
+    "com.rdelgatte.hexagonal.persistence.postgres",
 })
 ``` 
+
+## Demo
+
+[See demo scenario](doc/demo.md)
