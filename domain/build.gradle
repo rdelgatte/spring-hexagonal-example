@@ -14,5 +14,5 @@ pitest {
     outputFormats = ['XML', 'HTML']
     timestampedReports = false
     threads = 4
-    targetClasses = ['com.decathlon.offer.danube.api.*']
+    targetClasses = ['com.rdelgatte.hexagonal.api.*']
 }
