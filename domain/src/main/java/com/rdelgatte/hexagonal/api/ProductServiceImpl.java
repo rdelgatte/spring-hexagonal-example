@@ -1,7 +1,5 @@
 package com.rdelgatte.hexagonal.api;
 
-import static java.math.BigDecimal.ZERO;
-
 import com.rdelgatte.hexagonal.domain.Product;
 import com.rdelgatte.hexagonal.spi.ProductRepository;
 import io.vavr.collection.List;
@@ -17,9 +15,6 @@ public class ProductServiceImpl implements ProductService {
   public Product createProduct(Product product) {
     if (product.getCode().isEmpty()) {
       throw new IllegalArgumentException("There is no code for the product");
-    }
-    if (product.getPrice().compareTo(ZERO) <= 0) {
-      throw new IllegalArgumentException("Product should be priced");
     }
     Option<Product> productById = productRepository.findProductByCode(product.getCode());
     if (productById.isDefined()) {

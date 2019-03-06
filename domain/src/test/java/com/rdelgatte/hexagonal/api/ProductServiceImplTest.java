@@ -72,6 +72,15 @@ class ProductServiceImplTest {
   }
 
   @Test
+  void productWithInvalidPrice_createProduct_throwsException() {
+    IllegalArgumentException illegalArgumentException = assertThrows(IllegalArgumentException.class,
+        () -> cut.createProduct(ANY_PRODUCT.withPrice(BigDecimal.valueOf(-10.0))));
+
+    assertThat(illegalArgumentException.getMessage()).isEqualTo("Product should be priced");
+    verifyZeroInteractions(productRepositoryMock);
+  }
+
+  @Test
   void unknownValidProduct_createProduct() {
     when(productRepositoryMock.findProductByCode(ANY_PRODUCT_CODE)).thenReturn(None());
     when(productRepositoryMock.addProduct(ANY_PRODUCT)).thenReturn(ANY_PRODUCT);
