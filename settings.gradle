@@ -3,6 +3,5 @@ rootProject.name = 'hexagonal'
 include 'domain'
 include 'infrastructure:rest-client'
 include 'infrastructure:memory-persistence'
-include 'infrastructure:postgres-persistence'
 include 'console-application'
 

@@ -1,5 +1,4 @@
 rootProject.name = 'infrastructure'
 
 include 'memory-persistence'
-include 'postgres-persistence'
 include 'rest-client'
