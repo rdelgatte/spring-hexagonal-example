@@ -1,4 +1,3 @@
 rootProject.name = 'infrastructure'
 
 include 'memory-persistence'
-include 'rest-client'
