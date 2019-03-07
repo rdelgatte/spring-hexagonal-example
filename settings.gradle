@@ -1,5 +1,4 @@
 rootProject.name = 'hexagonal'
 
 include 'domain'
-include 'infrastructure:memory-persistence'
 
