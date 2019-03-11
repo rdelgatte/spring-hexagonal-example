@@ -19,4 +19,8 @@ public class Product {
   private String code = "";
   private String label = "";
   private BigDecimal price = BigDecimal.ZERO;
+
+  public String toString() {
+    return code + ": " + label + " (price: " + price.toString() + "€)";
+  }
 }
