@@ -1,2 +1,4 @@
 logging:
   level.root: info
+  pattern:
+    console: "%clr(%-5p) %clr(--){blue} %clr(%m){faint}%n"
