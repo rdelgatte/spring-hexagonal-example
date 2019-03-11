@@ -1,21 +1,4 @@
-spring:
-  # Postgres configuration
-  datasource:
-    url: jdbc:postgresql://${PG_HOST}:${PG_PORT}/${PG_DB_NAME}
-    username: ${PG_USER_NAME}
-    password: ${PG_PASSWORD}
-
-  jpa:
-    properties:
-      hibernate:
-        # The SQL dialect makes Hibernate generate better SQL for the chosen database
-        dialect: org.hibernate.dialect.PostgreSQL9Dialect
-        # Disable contextual creation (clob) not required and jdbc does not implement it (see LobCreatorBuilder)
-        jdbc:
-          lob:
-            non_contextual_creation: true
-    # Hibernate ddl auto (create, create-drop, validate, update)
-    hibernate:
-      ddl-auto: update
 logging:
   level.root: info
+  pattern:
+    console: "%clr(%-5p) %clr(--){blue} %clr(%m){faint}%n"
